@@ -6,7 +6,7 @@ const pre_btn = document.getElementById("prv-btn");
 const nxt_btn = document.getElementById("nxt-btn");
 const options_order = shuffleArray([0, 1, 2, 3]);
 let score = 0;
-const quiz_length = 9;
+const quiz_length = 9; // actual -1
 let curr_quiz = 0;
 let quizData;
 q_tracker.innerHTML = `${curr_quiz + 1}/${quiz_length + 1}`;
@@ -40,7 +40,9 @@ getQuizData().then((data) => {
 // returns quiz data - promise
 function getQuizData() {
   return fetch(
-    "https://opentdb.com/api.php?amount=10&category=18&type=multiple"
+    `https://opentdb.com/api.php?amount=${
+      quiz_length + 1
+    }&category=18&type=multiple`
   )
     .then((res) => {
       return res.json();
@@ -82,6 +84,12 @@ function returnOptions(n) {
 }
 
 function renderQuestionCard() {
+  if (curr_quiz === quiz_length + 1) {
+    question.innerHTML = `Congradulations! <br> You have scored: <br> ${score} / ${
+      quiz_length + 1
+    }`;
+    options.innerHTML = "";
+  }
   question.innerHTML = returnQuestion(curr_quiz);
   // let optionsArray = Array.from(options); // Convert HTMLCollection to array
   for (let i = 0; i < 4; i++) {
@@ -92,12 +100,6 @@ function renderQuestionCard() {
     opt.addEventListener("click", nextQuiz);
     opt.innerHTML = returnOptions(curr_quiz)[option_place];
     options.appendChild(opt);
-  }
-  if (curr_quiz === quiz_length+1) {
-    question.innerHTML = `Congradulations! <br> You have scored: <br> ${score} / ${
-      quiz_length + 1
-    }`;
-    options.innerHTML = "";
   }
 }
 
@@ -111,6 +113,7 @@ function nextQuiz() {
   }
 
   curr_quiz += 1;
+  console.log(curr_quiz);
   options.innerHTML = ""; // clearing previous options
   question.innerHTML = "One moment please!";
 
